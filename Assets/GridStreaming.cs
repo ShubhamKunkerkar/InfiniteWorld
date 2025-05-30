@@ -1,6 +1,4 @@
 using UnityEngine;
-using System;
-using Unity.Mathematics.Geometry;
 public partial class GridStreaming : MonoBehaviour
 {
     // References
