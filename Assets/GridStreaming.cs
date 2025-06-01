@@ -1,6 +1,4 @@
 using UnityEngine;
-using System;
-using UnityEditor;
 public partial class GridStreaming : MonoBehaviour
 {
     // References
@@ -33,8 +31,8 @@ public partial class GridStreaming : MonoBehaviour
     {
         spawn_matrix = new GameObject[grid_size, grid_size];
         color_matrix = new Color[grid_size, grid_size];
-        matrix_offset_i = Math.Abs(Mathf.CeilToInt(-grid_size / 2));
-        matrix_offset_j = Math.Abs(Mathf.CeilToInt(-grid_size / 2));
+        matrix_offset_i = System.Math.Abs(Mathf.CeilToInt(-grid_size / 2));
+        matrix_offset_j = System.Math.Abs(Mathf.CeilToInt(-grid_size / 2));
         for (int i = 0; i < grid_size; i++)
         {
             for (int j = 0; j < grid_size; j++)
@@ -51,11 +49,11 @@ public partial class GridStreaming : MonoBehaviour
     }
     void OriginShifting()
     {
-        float cam_distance = new Vector2(cam.transform.position.x, cam.transform.position.z).magnitude;
+        float cam_distance = new Vector2(cam.transform.position.x, cam.transform.position.z).sqrMagnitude;
         CamActiveGridPos = new Vector2Int(
             Mathf.RoundToInt((cam.transform.position.x - start_coordinates.x) / tile_scale),
             Mathf.RoundToInt((cam.transform.position.z - start_coordinates.y) / tile_scale));
-        if (cam_distance > shift_radius)
+        if (cam_distance > System.Math.Pow(shift_radius, 2))
         {
             Vector3 shiftAmount = new Vector3(CamActiveGridPos.x * tile_scale + start_coordinates.x, 0, CamActiveGridPos.y * tile_scale + start_coordinates.y);
             cam.transform.position -= shiftAmount;
@@ -70,9 +68,6 @@ public partial class GridStreaming : MonoBehaviour
     }
     void ChunkLoading()
     {
-        CamActiveGridPos = new Vector2Int(
-            Mathf.RoundToInt((cam.transform.position.x - start_coordinates.x) / tile_scale),
-            Mathf.RoundToInt((cam.transform.position.z - start_coordinates.y) / tile_scale));
         int RadiusInGridUnits = Mathf.RoundToInt(radius / tile_scale);
         for (int i = CamActiveGridPos.x - (RadiusInGridUnits + gridThreshold); i <= CamActiveGridPos.x + RadiusInGridUnits + gridThreshold; i++)
         {
@@ -80,19 +75,19 @@ public partial class GridStreaming : MonoBehaviour
             {
                 if (i < grid_size - matrix_offset_i && j < grid_size - matrix_offset_j && i >= -matrix_offset_i && j >= -matrix_offset_j)
                 {
-                    float distance = Mathf.Sqrt(Mathf.Pow(start_coordinates.x + i * tile_scale - cam.transform.position.x, 2) + Mathf.Pow(start_coordinates.y + j * tile_scale - cam.transform.position.z, 2));
-                    if (distance <= radius && spawn_matrix[i + matrix_offset_i, j + matrix_offset_j] == null && !flag)
+                    float distance = Mathf.Pow(start_coordinates.x + i * tile_scale - cam.transform.position.x, 2) + Mathf.Pow(start_coordinates.y + j * tile_scale - cam.transform.position.z, 2);
+                    if (distance <= System.Math.Pow(radius,2) && spawn_matrix[i + matrix_offset_i, j + matrix_offset_j] == null && !flag)
                     {
                         spawn_matrix[i + matrix_offset_i, j + matrix_offset_j] = Instantiate(floor, new Vector3(start_coordinates.x + i * tile_scale, 0, start_coordinates.y + j * tile_scale), Quaternion.identity);
                         spawn_matrix[i + matrix_offset_i, j + matrix_offset_j].GetComponent<Renderer>().material.color = color_matrix[i + matrix_offset_i, j + matrix_offset_j];
                         spawn_matrix[i + matrix_offset_i, j + matrix_offset_j].transform.localScale = new Vector3(tile_scale, 1, tile_scale);
                     }
-                    else if (distance > radius && spawn_matrix[i + matrix_offset_i, j + matrix_offset_j] != null && !flag)
+                    else if (distance > System.Math.Pow(radius,2) && spawn_matrix[i + matrix_offset_i, j + matrix_offset_j] != null && !flag)
                     {
                         Destroy(spawn_matrix[i + matrix_offset_i, j + matrix_offset_j]);
                         spawn_matrix[i + matrix_offset_i, j + matrix_offset_j] = null;
                     }
-                    else if (distance <= radius && spawn_matrix[i + matrix_offset_i, j + matrix_offset_j] != null && flag)
+                    else if (distance <= System.Math.Pow(radius,2) && spawn_matrix[i + matrix_offset_i, j + matrix_offset_j] != null && flag)
                     {
                         spawn_matrix[i + matrix_offset_i, j + matrix_offset_j].transform.localPosition -= new Vector3(shift_coordinates.x, 0, shift_coordinates.y);
                     }
