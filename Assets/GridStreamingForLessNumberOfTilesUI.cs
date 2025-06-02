@@ -1,11 +1,11 @@
 using UnityEngine;
 using UnityEditor;
 using System;
-public partial class GridStreaming : MonoBehaviour
+public partial class GridStreamingForLessNumberOfTiles : MonoBehaviour
 {
 #if UNITY_EDITOR
     // Custom inspector to show WireGridThreshold only when enableVisualization is true
-    [CustomEditor(typeof(GridStreaming))]
+    [CustomEditor(typeof(GridStreamingForLessNumberOfTiles))]
     public class Floor1Editor : Editor
     {
         public override void OnInspectorGUI()

@@ -1,5 +1,5 @@
 using UnityEngine;
-public partial class GridStreaming : MonoBehaviour
+public partial class GridStreamingForLessNumberOfTiles : MonoBehaviour
 {
     // References
     [SerializeField] private GameObject floor = null;
@@ -87,9 +87,26 @@ public partial class GridStreaming : MonoBehaviour
                         Destroy(spawn_matrix[i + matrix_offset_i, j + matrix_offset_j]);
                         spawn_matrix[i + matrix_offset_i, j + matrix_offset_j] = null;
                     }
-                    else if (distance <= System.Math.Pow(radius,2) && spawn_matrix[i + matrix_offset_i, j + matrix_offset_j] != null && flag)
+                    if (flag)
                     {
-                        spawn_matrix[i + matrix_offset_i, j + matrix_offset_j].transform.localPosition -= new Vector3(shift_coordinates.x, 0, shift_coordinates.y);
+                        if (spawn_matrix[i + matrix_offset_i, j + matrix_offset_j] != null)
+                        {
+                            if (distance > System.Math.Pow(radius,2))
+                            {
+                                Destroy(spawn_matrix[i + matrix_offset_i, j + matrix_offset_j]);
+                                spawn_matrix[i + matrix_offset_i, j + matrix_offset_j] = null;
+                            }
+                            else
+                            {
+                                spawn_matrix[i + matrix_offset_i, j + matrix_offset_j].transform.localPosition -= new Vector3(shift_coordinates.x, 0, shift_coordinates.y);
+                            }
+                        }
+                        else if (distance <= System.Math.Pow(radius,2) && spawn_matrix[i + matrix_offset_i, j + matrix_offset_j] == null)
+                        {
+                            spawn_matrix[i + matrix_offset_i, j + matrix_offset_j] = Instantiate(floor, new Vector3(start_coordinates.x + i * tile_scale, 0, start_coordinates.y + j * tile_scale), Quaternion.identity);
+                            spawn_matrix[i + matrix_offset_i, j + matrix_offset_j].GetComponent<Renderer>().material.color = color_matrix[i + matrix_offset_i, j + matrix_offset_j];
+                            spawn_matrix[i + matrix_offset_i, j + matrix_offset_j].transform.localScale = new Vector3(tile_scale, 1, tile_scale);
+                        }
                     }
                 }
             }
