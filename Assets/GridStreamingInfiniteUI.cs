@@ -64,12 +64,12 @@ public partial class GridStreamingInfinite : MonoBehaviour
         int CamXcoordsInGridSpace = Mathf.RoundToInt((cam.transform.position.x - start_coordinates.x) / tile_scale);
         int CamZcoordsInGridSpace = Mathf.RoundToInt((cam.transform.position.z - start_coordinates.y) / tile_scale);
         int RadiusInGridUnits = Mathf.RoundToInt(radius / tile_scale);
-        loopShift = Mathf.Abs(Mathf.CeilToInt(-grid_size / 2));
+        loopShift = System.Math.Abs((long)Mathf.CeilToInt(-(float)grid_size / 2));
         for (int i = CamXcoordsInGridSpace - (RadiusInGridUnits + WireGridThreshold); i <= CamXcoordsInGridSpace + RadiusInGridUnits + WireGridThreshold; i++)
         {
             for (int j = CamZcoordsInGridSpace - (RadiusInGridUnits + WireGridThreshold); j <= CamZcoordsInGridSpace + RadiusInGridUnits + WireGridThreshold; j++)
             {
-                if (i < grid_size - loopShift && j < grid_size - loopShift && i >= -loopShift && j >= -loopShift)
+                if (i < (long)grid_size - loopShift && j < (long)grid_size - loopShift && i >= -loopShift && j >= -loopShift)
                 {
                     Vector3 center = new Vector3(
                         start_coordinates.x + i * tile_scale,
@@ -91,7 +91,7 @@ public partial class GridStreamingInfinite : MonoBehaviour
         {
             for (int j = CamZcoordsInGridSpace - (RadiusInGridUnits + gridThreshold); j <= CamZcoordsInGridSpace + RadiusInGridUnits + gridThreshold; j++)
             {
-                if (i < grid_size - loopShift && j < grid_size - loopShift && i >= -loopShift && j >= -loopShift)
+                if (i < (long)grid_size - loopShift && j < (long)grid_size - loopShift && i >= -loopShift && j >= -loopShift)
                 {
                     Vector3 cellCenter = new Vector3(
                         start_coordinates.x + i * tile_scale,
