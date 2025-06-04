@@ -49,10 +49,9 @@ public partial class GridStreamingInfinite : MonoBehaviour
 
         // Calculate grid-aligned camera position
         Vector3 camPos = cam.transform.position;
-        Vector3 gridPos = new Vector3(
-            Mathf.Round((camPos.x - start_coordinates.x) / tile_scale) * tile_scale + start_coordinates.x,
-            0,
-            Mathf.Round((camPos.z - start_coordinates.y) / tile_scale) * tile_scale + start_coordinates.y
+        Vector2Long gridPos = new Vector2Long(
+            (long)System.Math.Round((double)(cam.transform.position.x - start_coordinates.x) / tile_scale),
+            (long)System.Math.Round((double)(cam.transform.position.z - start_coordinates.y) / tile_scale)
         );
 
         // Draw camera position
@@ -61,15 +60,13 @@ public partial class GridStreamingInfinite : MonoBehaviour
         Handles.Label(new Vector3(camPos.x, 0.6f, camPos.z), "<b>Camera</b>", new GUIStyle() { normal = { textColor = camPosColor }, fontStyle = FontStyle.Bold });
 
         // Draw grid as wire cubes
-        int CamXcoordsInGridSpace = Mathf.RoundToInt((cam.transform.position.x - start_coordinates.x) / tile_scale);
-        int CamZcoordsInGridSpace = Mathf.RoundToInt((cam.transform.position.z - start_coordinates.y) / tile_scale);
         int RadiusInGridUnits = Mathf.RoundToInt(radius / tile_scale);
         loopShift = System.Math.Abs((long)Mathf.CeilToInt(-(float)grid_size / 2));
-        for (int i = CamXcoordsInGridSpace - (RadiusInGridUnits + WireGridThreshold); i <= CamXcoordsInGridSpace + RadiusInGridUnits + WireGridThreshold; i++)
+        for (long i = gridPos.x - (RadiusInGridUnits + WireGridThreshold); i <= gridPos.x + RadiusInGridUnits + WireGridThreshold; i++)
         {
-            for (int j = CamZcoordsInGridSpace - (RadiusInGridUnits + WireGridThreshold); j <= CamZcoordsInGridSpace + RadiusInGridUnits + WireGridThreshold; j++)
+            for (long j = gridPos.y - (RadiusInGridUnits + WireGridThreshold); j <= gridPos.y + RadiusInGridUnits + WireGridThreshold; j++)
             {
-                if (i < (long)grid_size - loopShift && j < (long)grid_size - loopShift && i >= -loopShift && j >= -loopShift)
+                if (i < grid_size - loopShift && j < grid_size - loopShift && i >= -loopShift && j >= -loopShift)
                 {
                     Vector3 center = new Vector3(
                         start_coordinates.x + i * tile_scale,
@@ -87,11 +84,11 @@ public partial class GridStreamingInfinite : MonoBehaviour
         Handles.DrawWireDisc(new Vector3(camPos.x, 0, camPos.z), Vector3.up, radius);
 
         // Highlight cells in spawn area and draw lines
-        for (int i = CamXcoordsInGridSpace - (RadiusInGridUnits + gridThreshold); i <= CamXcoordsInGridSpace + RadiusInGridUnits + gridThreshold; i++)
+        for (long i = gridPos.x - (RadiusInGridUnits + gridThreshold); i <= gridPos.x + RadiusInGridUnits + gridThreshold; i++)
         {
-            for (int j = CamZcoordsInGridSpace - (RadiusInGridUnits + gridThreshold); j <= CamZcoordsInGridSpace + RadiusInGridUnits + gridThreshold; j++)
+            for (long j = gridPos.y - (RadiusInGridUnits + gridThreshold); j <= gridPos.y + RadiusInGridUnits + gridThreshold; j++)
             {
-                if (i < (long)grid_size - loopShift && j < (long)grid_size - loopShift && i >= -loopShift && j >= -loopShift)
+                if (i < grid_size - loopShift && j < grid_size - loopShift && i >= -loopShift && j >= -loopShift)
                 {
                     Vector3 cellCenter = new Vector3(
                         start_coordinates.x + i * tile_scale,
@@ -138,12 +135,14 @@ public partial class GridStreamingInfinite : MonoBehaviour
 
         // Draw snapped grid position and line from camera to grid snap
         Handles.color = gridSnapColor;
-        Handles.SphereHandleCap(0, gridPos, Quaternion.identity, 5.0f, EventType.Repaint);
-        Handles.DrawLine(new Vector3(camPos.x, 0, camPos.z), gridPos, 3f);
+        Vector3 gridSnapPosition = new Vector3(gridPos.x * tile_scale + start_coordinates.x, 0,
+                                             gridPos.y * tile_scale + start_coordinates.y);
+        Handles.SphereHandleCap(0, gridSnapPosition, Quaternion.identity, 5.0f, EventType.Repaint);
+        Handles.DrawLine(new Vector3(camPos.x, 0, camPos.z), gridSnapPosition, 3f);
 
         // Draw distance label
-        float distance = Vector3.Distance(new Vector3(camPos.x, 0, camPos.z), gridPos);
-        Handles.Label(gridPos + Vector3.forward * 15f + Vector3.left * 60f, $"Dist: {distance:F2} Active Grid : ({(gridPos.x - start_coordinates.x) / tile_scale},{(gridPos.z - start_coordinates.y) / tile_scale})", new GUIStyle() { normal = { textColor = Color.white }, fontStyle = FontStyle.Bold });
+        float distance = Vector3.Distance(new Vector3(camPos.x, 0, camPos.z), gridSnapPosition);
+        Handles.Label(gridSnapPosition + Vector3.forward * 15f + Vector3.left * 60f, $"Dist: {distance:F2} Active Grid : ({gridPos.x},{gridPos.y})", new GUIStyle() { normal = { textColor = Color.white }, fontStyle = FontStyle.Bold });
 
     }
 #endif
